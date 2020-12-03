@@ -1,32 +1,25 @@
 #include "stm32f3xx_hal.h"
 #include "logger.h"
-
-#define LED_PIN                                GPIO_PIN_14
-#define LED_GPIO_PORT                          GPIOE
-#define LED_GPIO_CLK_ENABLE()                  __HAL_RCC_GPIOE_CLK_ENABLE()
+#include "io.h"
 
 // Global log
 Logger g_log;
+// Global Io map
+Io g_io;
 
 int main(void)
 {
   HAL_Init();
-
-  LED_GPIO_CLK_ENABLE();
-
-  GPIO_InitTypeDef GPIO_InitStruct;
-
-  GPIO_InitStruct.Pin = LED_PIN;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(LED_GPIO_PORT, &GPIO_InitStruct);
-
+  int i = 0;
   while (1)
   {
-    HAL_GPIO_TogglePin(LED_GPIO_PORT, LED_PIN);
-
+    g_io.Toggle(static_cast<IoMap_e>(i));
+    g_log.Printf(kLogInfo, "Hello %d", i);
     HAL_Delay(250);
+    i++;
+    if(i > 7) {
+      i = 0;
+    }
   }
 }
 
